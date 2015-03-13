@@ -4,6 +4,22 @@ $tile-padding: 15px;    // The padding between tiles
 
 $tile-size: ($width - $tile-padding * ($tile-count + 1)) / $tile-count;
 
+@function power ($x, $n) {
+  $ret: 1;
+
+  @if $n >= 0 {
+    @for $i from 1 through $n {
+      $ret: $ret * $x;
+    } 
+  } @else {
+    @for $i from $n to 0 {
+      $ret: $ret / $x;
+    }
+  }
+
+  @return $ret;
+}
+
 #game {
   position: relative;
   width: $width;
@@ -38,20 +54,20 @@ $tile-size: ($width - $tile-padding * ($tile-count + 1)) / $tile-count;
 
   // Dynamically create .position-#{x}-#{y} classes to mark
   // where each tile will be placed
-  //@for $x from 1 through $tile-count {
-  //  @for $y from 1 through $tile-count {
-  //    $zeroOffsetX: $x - 1;
-  //    $zeroOFfsetY: $y - 1;
-  //    $newX: ($tile-size) * ($zeroOffsetX) + ($tile-padding * $zeroOffsetX);
-  //    $newY: ($tile-size) * ($zeroOffsetY) + ($tile-padding * $zeroOffsetY);
+  @for $x from 1 through $tile-count {
+    @for $y from 1 through $tile-count {
+      $zeroOffsetX: $x - 1;
+      $zeroOffsetY: $y - 1;
 
-  //    &.position-#{$zeroOffsetX}-#{$zeroOffsetY} {
-  //      -webkit-transform: translate($newX, $newY);
-  //      transform: translate($newX, $newY);
-  //    }
-  //  }
-  //}
-}
+      $newX: ($tile-size) * ($zeroOffsetX) + ($tile-padding * $zeroOffsetX);
+      $newY: ($tile-size) * ($zeroOffsetY) + ($tile-padding * $zeroOffsetY);
+
+      &.position-#{$zeroOffsetX}-#{$zeroOffsetY} {
+        -webkit-transform: translate($newX, $newY);
+        transform: translate($newX, $newY);
+      }
+    }
+  }
 
 $colors:  #EEE4DA, // 2
           #EAE0C8, // 4
@@ -65,24 +81,12 @@ $colors:  #EEE4DA, // 2
           #DCAD60, // 1024
           #B60022; // 2048
 
-//@for $i from 1 through length($colors) {
-//  &.tile-#{power(2, $i)} .tile-inner {
-//    background: nth($colors, $i)
-//  }
-//}
-
-@function power ($x, $n) {
-  $ret: 1;
-
-  @if $n >= 0 {
-    @for $i from 1 through $n {
-      $ret: $ret * $x;
-    } 
-  } @else {
-    @for $i from $n to 0 {
-      $ret: $ret / $x;
-    }
+@for $i from 1 through length($colors) {
+  &.tile-#{power(2, $i)} .tile-inner {
+    background: nth($colors, $i)
   }
-
-  @return $ret;
 }
+
+
+}
+
