@@ -11,6 +11,11 @@ angular
 			self.value 	= val || 2;
 		};
 
+		Tile.prototype.updatePosition = function(newPos) {
+		    this.x = newPos.x;
+		    this.y = newPos.y;
+		};
+
 		return Tile;
 	})
 	.service('GridService', function(TileModel){
@@ -134,6 +139,75 @@ angular
 		self.removeTile = function(tile) {
 		    var pos = this._coordinatesToPosition(tile);
 		    delete this.tiles[pos];
+		};
+
+		var vectors = {
+		  'left': 	{ x: -1, 	y:  0 },
+		  'right': 	{ x:  1, 	y:  0 },
+		  'up': 	{ x:  0, 	y: -1 },
+		  'down': 	{ x:  0, 	y:  1 }
+		};
+
+		self.traversalDirections = function(key) {
+		    var vector = vectors[key];
+		    var positions = {x: [], y: []};
+		    for (var x = 0; x < this.size; x++) {
+		      positions.x.push(x);
+		      positions.y.push(x);
+		    }
+		    // Reorder if we're going right
+		    if (vector.x > 0) {
+		      positions.x = positions.x.reverse();
+		    }
+		    // Reorder the y positions if we're going down
+		    if (vector.y > 0) {
+		      positions.y = positions.y.reverse();
+		    }
+		    return positions;
+		};
+
+		self.calculateNextPosition = function(cell, key) {
+		  var vector = vectors[key];
+		  var previous;
+
+		  do {
+		    previous = cell;
+		    cell = {
+		      x: previous.x + vector.x,
+		      y: previous.y + vector.y
+		    };
+		  } while (this.withinGrid(cell) && this.cellAvailable(cell));
+
+		  return {
+		    newPosition: previous,
+		    next: this.getCellAt(cell)
+		  };
+		};
+
+
+		self.moveTile = function(tile, newPosition) {
+		  var oldPos = {
+		    x: tile.x,
+		    y: tile.y
+		  };
+
+		  // Update array location
+		  this.setCellAt(oldPos, null);
+		  this.setCellAt(newPosition, tile);
+		  // Update tile model
+		  tile.updatePosition(newPosition);
+		};
+
+		self.newTile = function(pos, value) {
+		  return new TileModel(pos, value);
+		};
+
+		self.prepareTiles = function() {
+		  this.forEach(function(x,y,tile) {
+		    if (tile) {
+		      tile.reset();
+		    }
+		  });
 		};
 
 	});
