@@ -1,12 +1,13 @@
 # twentyfourtyeight
 
-This project is generated with [yo angular generator](https://github.com/yeoman/generator-angular)
-version 0.11.1.
+My first app on Angular
 
-## Build & development
+## Run
 
-Run `grunt` for building and `grunt serve` for preview.
+git clone https://github.com/FonDorn/2048-ng.git
 
-## Testing
+npm install 
 
-Running `grunt test` will run the unit tests with karma.
+bower install
+
+grunt serve
