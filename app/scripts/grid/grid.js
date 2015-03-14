@@ -21,8 +21,8 @@ angular
 		self.grid 	= [];
 		self.tiles 	= [];
 
-		self.tiles.push(new TileModel({x:1, y:1}));
-		self.tiles.push(new TileModel({x:1, y:2}));
+		self.tiles.push(new TileModel({x:1, y:1}, 2));
+		self.tiles.push(new TileModel({x:1, y:2}, 2));
 
 		// Size of board
 		self.size 	= 4;
