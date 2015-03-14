@@ -1,10 +1,14 @@
 'use strict';
 
 angular
-	.module('Game', [])
-	.service('GameManager', function(GridService){
+	.module('Game', ['Grid', 'ngCookies'])
+	.service('GameManager', function(GridService, $cookieStore){
 	  
 	  var self = this;
+
+	  self.getHighScore = function() {
+		  return parseInt($cookieStore.get('highScore')) || 0;
+		};
 
 	  // Create a new game
 	  self.newGame = function() {
@@ -14,7 +18,7 @@ angular
 	  };
 
 	  // Handle the move action
-	  this.move = function(key) {
+	  self.move = function(key) {
 		  var self = this;
 		  var hasWon = false;
 		  var hasMoved = false;
@@ -48,11 +52,11 @@ angular
 						// Remove the old tile
 						GridService.removeTile(tile);
 						// Move the location of the mergedTile into the next position
-						GridService.moveTile(merged, next);
+						GridService.moveTile(mergedTile, next);
 						// Update the score of the game
 						self.updateScore(self.currentScore + newValue);
 						// Check for the winning value
-						if (merged.value >= self.winningValue) {
+						if (mergedTile.value >= self.winningValue) {
 						  hasWon = true;
 						}
 						hasMoved = true; // we moved with a merge
@@ -60,7 +64,7 @@ angular
 					    GridService.moveTile(tile, cell.newPosition);
 					  }
 
-					  if (!GridService.samePositions(originalPos, cell.newPosition)) {
+					  if (!GridService.samePositions(originalPosition, cell.newPosition)) {
 						  hasMoved = true;
 						}
 
@@ -78,7 +82,14 @@ angular
 		};
 	  
 	  // Update the score
-	  self.updateScore = function(newScore) {};
+	  self.updateScore = function(newScore) {
+	  	this.currentScore = newScore;
+		  if (this.currentScore > this.getHighScore()) {
+		    this.highScore = newScore;
+		    // Set on the cookie
+		    $cookieStore.put('highScore', newScore);
+		  }
+	  };
 	  
 	  // Are there moves left?
 	  self.movesAvailable = function() {
